@@ -213,6 +213,7 @@ class MotoCareMobileDB {
   }
 
   saveBooking(booking) {
+    let isNew = !booking.id;
     if (booking.id) {
       const idx = this.state.bookings.findIndex(b => b.id === booking.id);
       if (idx !== -1) {
@@ -240,6 +241,11 @@ class MotoCareMobileDB {
       this.state.bookings.push(booking);
     }
     this.commit();
+
+    if (isNew && typeof window.onNewBookingCreated === 'function') {
+      window.onNewBookingCreated(booking.id);
+    }
+
     return booking;
   }
 

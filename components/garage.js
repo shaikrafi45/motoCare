@@ -3,6 +3,9 @@
 import db from '../utils/db.js';
 import audio from '../utils/audio.js';
 
+let telemetryInterval = null;
+let currentTemp = 84;
+
 export default function renderGarage(container) {
   const telemetry = db.getBikeTelemetry();
   const activeRole = db.getUserRole();
@@ -25,7 +28,7 @@ export default function renderGarage(container) {
         </span>
       </div>
 
-      <!-- Motor Ignition Key Switch (Programmatic Web Audio thumper trigger) -->
+      <!-- Motor Ignition Key Switch -->
       <div class="ignition-panel">
         <button class="ignition-key-btn ${isEngineRunning ? 'active' : ''}" id="garage-ignition-trigger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -47,14 +50,14 @@ export default function renderGarage(container) {
         <div class="gauge-svg-wrap">
           <svg class="gauge-svg" width="65" height="65" viewBox="0 0 65 65">
             <circle class="gauge-bg-circle" cx="32.5" cy="32.5" r="24"></circle>
-            <circle class="gauge-progress-circle" cx="32.5" cy="32.5" r="24" 
+            <circle class="gauge-progress-circle" id="gauge-circle-fuel" cx="32.5" cy="32.5" r="24" 
                     stroke="var(--primary)" 
                     stroke-dasharray="150.8" 
                     stroke-dashoffset="${150.8 * (1 - telemetry.fuel / 100)}"
                     style="filter: drop-shadow(0 0 3px var(--primary-glow));">
             </circle>
           </svg>
-          <span class="gauge-center-val">${telemetry.fuel}%</span>
+          <span class="gauge-center-val" id="gauge-val-fuel">${telemetry.fuel}%</span>
         </div>
         <span class="gauge-lbl">Fuel Level</span>
       </div>
@@ -64,14 +67,14 @@ export default function renderGarage(container) {
         <div class="gauge-svg-wrap">
           <svg class="gauge-svg" width="65" height="65" viewBox="0 0 65 65">
             <circle class="gauge-bg-circle" cx="32.5" cy="32.5" r="24"></circle>
-            <circle class="gauge-progress-circle" cx="32.5" cy="32.5" r="24" 
+            <circle class="gauge-progress-circle" id="gauge-circle-battery" cx="32.5" cy="32.5" r="24" 
                     stroke="var(--col-success)" 
                     stroke-dasharray="150.8" 
                     stroke-dashoffset="${150.8 * (1 - telemetry.battery / 100)}"
                     style="filter: drop-shadow(0 0 3px var(--col-success-glow));">
             </circle>
           </svg>
-          <span class="gauge-center-val">${telemetry.battery}%</span>
+          <span class="gauge-center-val" id="gauge-val-battery">${telemetry.battery}%</span>
         </div>
         <span class="gauge-lbl">Battery</span>
       </div>
@@ -81,14 +84,14 @@ export default function renderGarage(container) {
         <div class="gauge-svg-wrap">
           <svg class="gauge-svg" width="65" height="65" viewBox="0 0 65 65">
             <circle class="gauge-bg-circle" cx="32.5" cy="32.5" r="24"></circle>
-            <circle class="gauge-progress-circle" cx="32.5" cy="32.5" r="24" 
+            <circle class="gauge-progress-circle" id="gauge-circle-temp" cx="32.5" cy="32.5" r="24" 
                     stroke="var(--secondary)" 
                     stroke-dasharray="150.8" 
-                    stroke-dashoffset="${150.8 * (1 - telemetry.temp / 120)}"
+                    stroke-dashoffset="${150.8 * (1 - currentTemp / 120)}"
                     style="filter: drop-shadow(0 0 3px var(--secondary-glow));">
             </circle>
           </svg>
-          <span class="gauge-center-val">${telemetry.temp}°C</span>
+          <span class="gauge-center-val" id="gauge-val-temp">${currentTemp}°C</span>
         </div>
         <span class="gauge-lbl">Coolant</span>
       </div>
@@ -103,7 +106,7 @@ export default function renderGarage(container) {
       </div>
     </div>
 
-    <!-- Active Demo Swapper Profile (Interview Demo goldmine!) -->
+    <!-- Active Demo Swapper Profile -->
     <div class="glass-card" style="background: rgba(255,255,255,0.01); margin-bottom: 0;">
       <span class="details-lbl" style="display:block; margin-bottom: 8px; text-align: center;">Demo Role Switcher</span>
       <div style="display: flex; gap: 6px;">
@@ -125,8 +128,10 @@ export default function renderGarage(container) {
 
     if (audio.isEngineRunning) {
       audio.stopEngine();
+      stopTelemetryLoop();
     } else {
       audio.startEngine();
+      startTelemetryLoop(container);
     }
 
     renderGarage(container); // Repaint view
@@ -144,4 +149,63 @@ export default function renderGarage(container) {
       renderGarage(container); // Repaint
     });
   });
+
+  // Start telemetry loop if engine is already running
+  if (isEngineRunning) {
+    startTelemetryLoop(container);
+  }
+}
+
+// Telemetry Animation Loop: Fluctuates values in real time directly in the DOM
+function startTelemetryLoop(container) {
+  if (telemetryInterval) return;
+
+  const fuelCircle = container.querySelector('#gauge-circle-fuel');
+  const fuelText = container.querySelector('#gauge-val-fuel');
+  const battCircle = container.querySelector('#gauge-circle-battery');
+  const battText = container.querySelector('#gauge-val-battery');
+  const tempCircle = container.querySelector('#gauge-circle-temp');
+  const tempText = container.querySelector('#gauge-val-temp');
+
+  let fuelValue = 75;
+  let batteryValue = 92;
+
+  telemetryInterval = setInterval(() => {
+    // 1. Coolant Temp: Rises slowly up to 96-98°C and fluctuates
+    if (currentTemp < 96) {
+      currentTemp += Math.random() * 1.5;
+    } else {
+      currentTemp += (Math.random() - 0.5) * 0.8;
+    }
+    currentTemp = Math.min(Math.max(currentTemp, 80), 99);
+
+    // 2. Battery: Fluctuates slightly between 91.5% and 92.5% (simulating active alternator charging)
+    batteryValue += (Math.random() - 0.5) * 0.4;
+    batteryValue = Math.min(Math.max(batteryValue, 91.2), 92.8);
+
+    // 3. Fuel: Drips down very slowly
+    fuelValue -= 0.005;
+    if (fuelValue < 5) fuelValue = 75; // reset for demo
+
+    // Update DOM elements directly for smooth performance
+    if (tempCircle && tempText) {
+      tempText.innerText = `${Math.round(currentTemp)}°C`;
+      tempCircle.setAttribute('stroke-dashoffset', 150.8 * (1 - currentTemp / 120));
+    }
+    if (battCircle && battText) {
+      battText.innerText = `${batteryValue.toFixed(1)}%`;
+      battCircle.setAttribute('stroke-dashoffset', 150.8 * (1 - batteryValue / 100));
+    }
+    if (fuelCircle && fuelText) {
+      fuelText.innerText = `${Math.round(fuelValue)}%`;
+      fuelCircle.setAttribute('stroke-dashoffset', 150.8 * (1 - fuelValue / 100));
+    }
+  }, 600);
+}
+
+function stopTelemetryLoop() {
+  if (telemetryInterval) {
+    clearInterval(telemetryInterval);
+    telemetryInterval = null;
+  }
 }
