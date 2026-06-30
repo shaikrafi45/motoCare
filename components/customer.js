@@ -3,6 +3,14 @@
 import db from '../utils/db.js';
 import audio from '../utils/audio.js';
 
+// Persist active estimator selections on window
+if (!window.ActiveEstimatorBrand) {
+  window.ActiveEstimatorBrand = 'KTM';
+}
+if (!window.SelectedEstimatorParts) {
+  window.SelectedEstimatorParts = {};
+}
+
 export default function renderCustomer(container) {
   const bookings = db.getBookings();
   const brands = db.getBrands();
@@ -176,7 +184,18 @@ export default function renderCustomer(container) {
     }
 
   } else {
-    // 2. RENDER BOOKING WIZARD FORM
+    // 2. RENDER ESTIMATOR & BOOKING WIZARD FORM
+    const estBrand = window.ActiveEstimatorBrand;
+    const estParts = db.getEstimatorParts(estBrand);
+    const selectedPartIds = window.SelectedEstimatorParts;
+    
+    let partsTotalCost = 0;
+    estParts.forEach(p => {
+      if (selectedPartIds[p.id]) {
+        partsTotalCost += p.price;
+      }
+    });
+
     container.innerHTML = `
       <div class="customer-grid" style="grid-template-columns: 1fr; gap: 16px;">
         
@@ -250,10 +269,56 @@ export default function renderCustomer(container) {
           </form>
         </div>
 
+        <!-- NEW: Spares Price Estimator (Brand Selective Parts Cost) -->
+        <div class="glass-card" style="padding: 16px;">
+          <h4 style="font-size:0.82rem; font-weight:700; color:var(--primary); margin-bottom:10px;">🔧 Spares Price Estimator</h4>
+          
+          <!-- Brand Selector chips -->
+          <div style="display: flex; gap: 4px; margin-bottom: 12px;">
+            ${['KTM', 'Royal Enfield', 'Bajaj', 'Jawa'].map(b => `
+              <button class="btn btn-secondary est-brand-btn ${estBrand === b ? 'active' : ''}" data-brand="${b}" 
+                      style="flex-grow:1; padding: 6px 2px; font-size: 0.65rem; border-radius: 20px; text-transform: capitalize; justify-content: center;">
+                ${b === 'Royal Enfield' ? 'RE' : b}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Parts Checklist rows -->
+          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 185px; overflow-y: auto; padding-right: 2px;">
+            ${estParts.map(p => `
+              <label class="checklist-check-row" 
+                     style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; 
+                            border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); 
+                            font-size: 0.72rem; cursor: pointer; transition: var(--transition-smooth);
+                            background: ${selectedPartIds[p.id] ? 'var(--primary-glow)' : 'rgba(255,255,255,0.01)'}; 
+                            border-color: ${selectedPartIds[p.id] ? 'var(--primary)' : 'var(--border-color)'};">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" class="est-part-chk" data-id="${p.id}" ${selectedPartIds[p.id] ? 'checked' : ''} style="margin: 0; width:14px; height:14px;">
+                  <span style="font-weight: 600; color: ${selectedPartIds[p.id] ? 'var(--text-main)' : 'var(--text-muted)'};">${p.name}</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-weight: 700; color: ${selectedPartIds[p.id] ? 'var(--primary)' : 'var(--text-light)'};">₹${p.price}</span>
+              </label>
+            `).join('')}
+          </div>
+
+          <!-- Price Estimator Summary -->
+          <div style="border-top: 1px dashed var(--border-color); margin-top: 10px; padding-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display:flex; flex-direction:column;">
+              <span style="font-size: 0.65rem; color: var(--text-light);">Parts Selected</span>
+              <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">${Object.values(selectedPartIds).filter(Boolean).length} items</span>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+              <span style="font-size: 0.65rem; color: var(--text-light);">Estimated Spares Cost</span>
+              <span style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 800; color: var(--primary);">₹${partsTotalCost}</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Past receipts logs -->
         <div class="glass-card" style="padding: 16px;">
           <h4 style="font-size:0.82rem; font-weight:700; color:var(--primary); margin-bottom:8px;">Past Service Receipts</h4>
-          <div style="display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto;" id="past-receipts-list">
+          <div style="display: flex; flex-direction: column; gap: 8px; max-height: 120px; overflow-y: auto;" id="past-receipts-list">
             ${pastOrders.length === 0 ? `
               <div style="text-align: center; color: var(--text-light); padding: 16px 0; font-size: 0.7rem;">
                 No past completed bookings.
@@ -274,6 +339,29 @@ export default function renderCustomer(container) {
 
       </div>
     `;
+
+    // Bind Brand selection chips in estimator
+    container.querySelectorAll('.est-brand-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const brand = btn.getAttribute('data-brand');
+        window.ActiveEstimatorBrand = brand;
+        window.SelectedEstimatorParts = {}; // Reset selections
+
+        audio.playTick();
+        renderCustomer(container); // Repaint
+      });
+    });
+
+    // Bind parts checkboxes inside estimator
+    container.querySelectorAll('.est-part-chk').forEach(chk => {
+      chk.addEventListener('change', (e) => {
+        const id = chk.getAttribute('data-id');
+        window.SelectedEstimatorParts[id] = e.target.checked;
+
+        audio.playTick();
+        renderCustomer(container); // Repaint total cost & highlights
+      });
+    });
 
     // Dynamic brand -> models binder dropdown list
     const brandSelect = container.querySelector('#book-brand');

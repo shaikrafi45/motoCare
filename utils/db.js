@@ -66,6 +66,36 @@ const INITIAL_STATE = {
   settings: {
     userRole: 'customer', // 'customer' | 'technician' | 'manager'
     address: 'H-21, Green Park Ext., New Delhi - 110016'
+  },
+  estimatorParts: {
+    'KTM': [
+      { id: 'est-k1', name: 'Brembo Brake Pads', price: 850 },
+      { id: 'est-k2', name: 'Motul 15W50 Engine Oil', price: 650 },
+      { id: 'est-k3', name: 'Trellis Frame Crash Guards', price: 1200 },
+      { id: 'est-k4', name: 'LED Turn Indicators', price: 950 },
+      { id: 'est-k5', name: 'KTM Front Alloy Rim', price: 4500 }
+    ],
+    'Royal Enfield': [
+      { id: 'est-re1', name: 'Chrome Silencer Pipe', price: 3200 },
+      { id: 'est-re2', name: 'Leather Split Seats', price: 1800 },
+      { id: 'est-re3', name: 'Front Spoke Wheel Rim', price: 2500 },
+      { id: 'est-re4', name: 'Engine Crash Guard Bar', price: 1400 },
+      { id: 'est-re5', name: 'Classic Round Headlight', price: 900 }
+    ],
+    'Bajaj': [
+      { id: 'est-b1', name: 'Pulsar Twin Spark Plug Set', price: 240 },
+      { id: 'est-b2', name: 'Front Brake Disc Plate', price: 800 },
+      { id: 'est-b3', name: 'Nitrox Rear Shockers (Pair)', price: 2200 },
+      { id: 'est-b4', name: 'Throttle Cable Wire', price: 180 },
+      { id: 'est-b5', name: 'Carbon Fiber Side Panels', price: 650 }
+    ],
+    'Jawa': [
+      { id: 'est-j1', name: 'Chrome Fuel Tank Badges', price: 600 },
+      { id: 'est-j2', name: 'Bar-End Mirrors (Pair)', price: 1100 },
+      { id: 'est-j3', name: 'Retro Tail Light Assembly', price: 750 },
+      { id: 'est-j4', name: 'Flat Cafe Racer Bench Seat', price: 1950 },
+      { id: 'est-j5', name: 'Front Chrome Mudguard', price: 1400 }
+    ]
   }
 };
 
@@ -109,6 +139,11 @@ class MotoCareMobileDB {
   // --- GARAGE TELEMETRY API ---
   getBikeTelemetry() {
     return this.state.ownerBike;
+  }
+
+  // --- SPARES ESTIMATOR API ---
+  getEstimatorParts(brand) {
+    return this.state.estimatorParts[brand] || [];
   }
 
   // --- ROLE / SETTINGS API ---
