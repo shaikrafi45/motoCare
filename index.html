@@ -24,7 +24,7 @@
       <!-- Phone Screen Container -->
       <div class="phone-screen">
         
-        <!-- Top App Bar -->
+        <!-- Top App Bar (Toggled with active elements) -->
         <header class="app-header">
           <div class="logo-box">
             <span class="logo-text">moto<span class="logo-orange">Care</span></span>
@@ -33,19 +33,77 @@
           <div class="header-right-actions">
             <!-- Audio mute button -->
             <button class="header-btn" id="header-mute-btn" title="Toggle audio alerts">
-              <svg id="mute-icon-unmuted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-              <svg id="mute-icon-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+              <svg id="mute-icon-unmuted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              <svg id="mute-icon-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             </button>
             
-            <span class="status-live-tag">CONNECT</span>
+            <!-- Logout Button (Only visible when logged in) -->
+            <button class="header-btn" id="header-logout-btn" title="Log Out" style="display: none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </button>
+            
+            <span class="status-live-tag" id="header-conn-tag">CONNECT</span>
           </div>
         </header>
 
         <!-- Dynamic Main Scroll Area -->
         <main class="phone-viewport">
           
-          <!-- View 1: Garage Dashboard (Default) -->
-          <section id="garage-view" class="view-panel active"></section>
+          <!-- View 0: Mobile Login Portal -->
+          <section id="login-view" class="view-panel active">
+            <div class="login-container" style="display: flex; flex-direction: column; gap: 16px; padding-top: 20px;">
+              <div style="text-align: center; margin-bottom: 8px;">
+                <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">Sign In</h3>
+                <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 2px;">Enter credentials to access your profile</p>
+              </div>
+
+              <!-- Role Tabs -->
+              <div class="login-tabs">
+                <button class="login-tab-btn active" data-role="customer">Customer</button>
+                <button class="login-tab-btn" data-role="technician">Mechanic</button>
+                <button class="login-tab-btn" data-role="manager">Manager</button>
+              </div>
+
+              <form id="app-login-form" class="booking-form" style="gap: 12px;">
+                <div class="form-group">
+                  <label for="login-email">Email Address</label>
+                  <input type="email" id="login-email" class="input-field" required value="customer@motocare.com" style="padding: 10px;">
+                </div>
+                
+                <div class="form-group">
+                  <label for="login-password">Password</label>
+                  <input type="password" id="login-password" class="input-field" required value="password" style="padding: 10px;">
+                </div>
+
+                <!-- Mechanic Profile select (Only shown when mechanic tab is selected) -->
+                <div class="form-group" id="login-tech-dropdown-wrap" style="display: none;">
+                  <label for="login-tech-profile">Mechanic Account</label>
+                  <select id="login-tech-profile" class="select-input" style="padding: 10px;">
+                    <option value="Vikram Rathore">Vikram Rathore</option>
+                    <option value="Rohan Sharma">Rohan Sharma</option>
+                    <option value="Sandeep Singh">Sandeep Singh</option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 10px; font-size: 0.82rem; margin-top: 4px;">
+                  Sign In
+                </button>
+              </form>
+
+              <!-- Quick Demo Accounts -->
+              <div style="border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 8px;">
+                <span class="details-lbl" style="display:block; margin-bottom: 8px; text-align: center; font-size: 0.6rem;">Demo Quick Shortcuts</span>
+                <div class="quick-login-row" style="gap: 6px;">
+                  <button class="quick-chip" id="quick-login-customer" style="padding: 6px; font-size: 0.65rem;">Customer</button>
+                  <button class="quick-chip" id="quick-login-mechanic" style="padding: 6px; font-size: 0.65rem;">Mechanic</button>
+                  <button class="quick-chip" id="quick-login-manager" style="padding: 6px; font-size: 0.65rem;">Manager</button>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- View 1: Garage Dashboard -->
+          <section id="garage-view" class="view-panel"></section>
 
           <!-- View 2: Servicing timeline booking / Technician / Manager views -->
           <section id="service-view" class="view-panel"></section>
@@ -61,8 +119,8 @@
 
         </main>
 
-        <!-- Bottom Native App Navigation Menu -->
-        <nav class="phone-navbar">
+        <!-- Bottom Native App Navigation Menu (Hidden when logged out) -->
+        <nav class="phone-navbar" style="display: none;">
           <button class="nav-item active" data-tab="garage" id="nav-garage">
             <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>

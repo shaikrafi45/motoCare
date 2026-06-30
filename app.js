@@ -11,13 +11,16 @@ import renderRides from './components/rides.js';
 import renderShop from './components/shop.js';
 
 const state = {
-  activeTab: 'garage' // 'garage' | 'service' | 'config' | 'rides' | 'shop'
+  isLoggedIn: false,
+  activeTab: 'login', // starts at login screen
+  activeLoginRole: 'customer' // 'customer' | 'technician' | 'manager'
 };
 
 function init() {
-  // Bind bottom navigation bar tabs clicks
+  // Bind bottom navigation bar tabs clicks (only active if logged in)
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (!state.isLoggedIn) return;
       const tab = btn.getAttribute('data-tab');
       switchTab(tab);
     });
@@ -32,17 +35,103 @@ function init() {
     document.getElementById('mute-icon-muted').style.display = isMuted ? 'block' : 'none';
   });
 
+  // Bind logout button in header
+  document.getElementById('header-logout-btn').addEventListener('click', () => {
+    performLogout();
+  });
+
+  // Bind Login Tab toggle buttons
+  document.querySelectorAll('.login-tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      audio.playTick();
+      
+      document.querySelectorAll('.login-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const role = btn.getAttribute('data-role');
+      state.activeLoginRole = role;
+      
+      // Update form defaults based on tab selection
+      const emailInput = document.getElementById('login-email');
+      const techDropdown = document.getElementById('login-tech-dropdown-wrap');
+      
+      if (role === 'customer') {
+        emailInput.value = 'customer@motocare.com';
+        techDropdown.style.display = 'none';
+      } else if (role === 'technician') {
+        emailInput.value = 'mechanic@motocare.com';
+        techDropdown.style.display = 'block';
+      } else if (role === 'manager') {
+        emailInput.value = 'manager@motocare.com';
+        techDropdown.style.display = 'none';
+      }
+    });
+  });
+
+  // Bind login form submission
+  document.getElementById('app-login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    audio.playTick();
+
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-password').value;
+    const selectedTech = document.getElementById('login-tech-profile').value;
+
+    let loginSuccessful = false;
+    let targetRole = state.activeLoginRole;
+
+    if (targetRole === 'customer' && email === 'customer@motocare.com' && pass === 'password') {
+      loginSuccessful = true;
+    } else if (targetRole === 'technician' && email === 'mechanic@motocare.com' && pass === 'password') {
+      loginSuccessful = true;
+      window.ActiveTechnicianName = selectedTech; // Set active mechanic profile
+    } else if (targetRole === 'manager' && email === 'manager@motocare.com' && pass === 'password') {
+      loginSuccessful = true;
+    }
+
+    if (loginSuccessful) {
+      performLogin(targetRole);
+    } else {
+      alert('Login failed! Invalid credentials.\n\nUse: customer@motocare.com / password\nor click the Quick Shortcuts below.');
+    }
+  });
+
+  // Bind Quick login developer chips
+  document.getElementById('quick-login-customer').addEventListener('click', (e) => {
+    e.preventDefault();
+    audio.playTick();
+    performLogin('customer');
+  });
+
+  document.getElementById('quick-login-mechanic').addEventListener('click', (e) => {
+    e.preventDefault();
+    audio.playTick();
+    window.ActiveTechnicianName = 'Vikram Rathore';
+    performLogin('technician');
+  });
+
+  document.getElementById('quick-login-manager').addEventListener('click', (e) => {
+    e.preventDefault();
+    audio.playTick();
+    performLogin('manager');
+  });
+
   // Bind global modal closing events
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);
   
-  // Initial draw defaults to Garage Dashboard
-  switchTab('garage');
+  // Start on the login screen
+  switchTab('login');
 }
 
 // Router switcher
 function switchTab(tabName) {
   audio.init();
-  audio.playTick(); // UI click tick
+  
+  // Strict auth guard
+  if (!state.isLoggedIn && tabName !== 'login') {
+    tabName = 'login';
+  }
 
   state.activeTab = tabName;
 
@@ -53,6 +142,7 @@ function switchTab(tabName) {
 
   // View container panels mapping
   const panels = {
+    login: { elId: 'login-view', renderer: () => {} }, // rendered in html
     garage: { elId: 'garage-view', renderer: renderGarage },
     service: { elId: 'service-view', renderer: renderServiceTab },
     config: { elId: 'config-view', renderer: renderConfigurator },
@@ -85,6 +175,39 @@ function renderServiceTab(container) {
   }
 }
 
+// Perform Sign In
+function performLogin(role) {
+  state.isLoggedIn = true;
+  db.setUserRole(role);
+
+  // Play throttle rev alert
+  audio.playEngineRev();
+
+  // Show header logout and bottom navbar
+  document.getElementById('header-logout-btn').style.display = 'block';
+  document.querySelector('.phone-navbar').style.display = 'grid';
+  document.getElementById('header-conn-tag').innerText = role.toUpperCase();
+
+  // Route to Garage Dashboard
+  switchTab('garage');
+}
+
+// Perform Logout
+function performLogout() {
+  state.isLoggedIn = false;
+  
+  // Stop motor thump if running
+  audio.stopEngine();
+
+  // Hide header logout and bottom navbar
+  document.getElementById('header-logout-btn').style.display = 'none';
+  document.querySelector('.phone-navbar').style.display = 'none';
+  document.getElementById('header-conn-tag').innerText = 'CONNECT';
+
+  // Route back to Login Portal
+  switchTab('login');
+}
+
 // Global helper: switch tabs programmatically
 window.switchTab = function(tabName) {
   switchTab(tabName);
@@ -92,6 +215,8 @@ window.switchTab = function(tabName) {
 
 // Global helper: refresh active view when DB updates happen
 window.refreshCurrentTab = function() {
+  if (!state.isLoggedIn) return;
+  
   const activePanel = document.querySelector('.view-panel.active');
   if (activePanel) {
     const panels = {

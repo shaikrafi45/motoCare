@@ -143,6 +143,10 @@ export default function renderGarage(container) {
       const role = chip.getAttribute('data-role');
       db.setUserRole(role);
       
+      // Sync top header tag!
+      const headerTag = document.getElementById('header-conn-tag');
+      if (headerTag) headerTag.innerText = role.toUpperCase();
+
       // Rev engine chime
       audio.playEngineRev();
 
@@ -171,7 +175,6 @@ function startTelemetryLoop(container) {
   let batteryValue = 92;
 
   telemetryInterval = setInterval(() => {
-    // 1. Coolant Temp: Rises slowly up to 96-98°C and fluctuates
     if (currentTemp < 96) {
       currentTemp += Math.random() * 1.5;
     } else {
@@ -179,15 +182,12 @@ function startTelemetryLoop(container) {
     }
     currentTemp = Math.min(Math.max(currentTemp, 80), 99);
 
-    // 2. Battery: Fluctuates slightly between 91.5% and 92.5% (simulating active alternator charging)
     batteryValue += (Math.random() - 0.5) * 0.4;
     batteryValue = Math.min(Math.max(batteryValue, 91.2), 92.8);
 
-    // 3. Fuel: Drips down very slowly
     fuelValue -= 0.005;
     if (fuelValue < 5) fuelValue = 75; // reset for demo
 
-    // Update DOM elements directly for smooth performance
     if (tempCircle && tempText) {
       tempText.innerText = `${Math.round(currentTemp)}°C`;
       tempCircle.setAttribute('stroke-dashoffset', 150.8 * (1 - currentTemp / 120));
