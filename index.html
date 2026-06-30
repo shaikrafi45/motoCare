@@ -14,14 +14,14 @@
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="role-customer-active">
+<body class="landing-active">
   <div class="app-layout">
     
-    <!-- Top Role Toggling Header Bar -->
+    <!-- Unified Top Header Bar -->
     <header class="app-header">
       <div class="header-left">
         <!-- Logo -->
-        <div class="logo-box">
+        <div class="logo-box" id="header-logo-home">
           <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
           </svg>
@@ -30,41 +30,240 @@
         </div>
       </div>
 
-      <!-- Center status display or tag -->
-      <div class="header-center-info">
-        <span class="hub-status-tag" id="header-status-indicator">ON-DEMAND REPAIRS</span>
+      <!-- Guest Navigation Links (Hidden in app mode) -->
+      <nav class="guest-nav" id="guest-navigation-bar">
+        <a href="#home" class="guest-nav-item active" data-target="home-view">Home</a>
+        <a href="#services" class="guest-nav-item" data-target="home-view">Services</a>
+        <a href="#pricing" class="guest-nav-item" data-target="home-view">Pricing</a>
+      </nav>
+
+      <!-- App Status Indicator (Hidden in landing mode) -->
+      <div class="header-center-info" id="app-status-bar" style="display: none;">
+        <span class="hub-status-tag" id="header-status-indicator">CUSTOMER PORTAL</span>
       </div>
 
-      <!-- Right Role Selector & Sound Control -->
+      <!-- Right Actions (Swaps between Guest Sign-In and Active Role Swapper) -->
       <div class="header-right">
+        
         <!-- Audio station mute -->
         <button class="header-btn" id="header-mute-btn" title="Toggle audio alerts">
           <svg id="mute-icon-unmuted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
           <svg id="mute-icon-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
         </button>
 
-        <!-- Dynamic Role Selector Dropdown -->
-        <div class="role-selector-box">
-          <label for="app-role-selector" class="role-lbl">Access Portal</label>
-          <select id="app-role-selector" class="select-input role-select">
-            <option value="customer" selected>Customer Portal</option>
-            <option value="technician">Technician/Service Portal</option>
-            <option value="manager">Shop Manager Console</option>
-          </select>
+        <!-- Guest Call-to-Action Login button -->
+        <button class="btn" id="guest-login-trigger-btn">Sign In / Register</button>
+
+        <!-- Logged-in Role Swapper & Logout (Hidden in landing mode) -->
+        <div class="role-selector-box" id="logged-in-profile-widget" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="role-select-wrap">
+              <label for="app-role-selector" class="role-lbl">Active Role</label>
+              <select id="app-role-selector" class="select-input role-select">
+                <option value="customer">Customer Portal</option>
+                <option value="technician">Technician/Service Portal</option>
+                <option value="manager">Shop Manager Console</option>
+              </select>
+            </div>
+            
+            <!-- Logout Button -->
+            <button class="btn btn-secondary" id="app-logout-btn" title="Log Out" style="padding: 10px 14px; margin-top: 13px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </button>
+          </div>
         </div>
+
       </div>
     </header>
 
     <!-- Main Viewport Space -->
     <main class="main-viewport">
       
-      <!-- Customer View container -->
-      <section id="customer-view" class="view-panel active"></section>
+      <!-- View 1: Marketing Landing Page (Default View) -->
+      <section id="home-view" class="view-panel active">
+        
+        <!-- Hero Section -->
+        <div class="hero-section">
+          <div class="hero-info">
+            <span class="hero-badge">🏍 Doorstep Bike Pickup & Repair</span>
+            <h1 class="hero-title">Professional Motorcycle Servicing <span class="logo-orange">At Your Home.</span></h1>
+            <p class="hero-desc">Book in 60 seconds. Our technician picks up your bike, services it using certified spares, and delivers it back. Live track the entire service process!</p>
+            <div class="hero-ctas">
+              <button class="btn btn-hero-book" id="hero-book-now-btn">Book Appointment Now</button>
+              <a href="#services" class="btn btn-secondary">Explore Services</a>
+            </div>
+          </div>
+          <!-- Hero graphic SVG -->
+          <div class="hero-graphic">
+            <svg class="hero-graphic-svg" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="85" fill="rgba(249,115,22,0.05)" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="6"/>
+              <path d="M 50,120 Q 100,50 150,120" stroke="var(--primary)" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <circle cx="50" cy="120" r="16" fill="#12131a" stroke="var(--primary)" stroke-width="3"/>
+              <circle cx="150" cy="120" r="16" fill="#12131a" stroke="var(--primary)" stroke-width="3"/>
+              <path d="M 70,80 L 130,80 L 110,60 Z" fill="var(--primary)"/>
+            </svg>
+          </div>
+        </div>
 
-      <!-- Technician View container -->
+        <!-- Features grid -->
+        <div class="features-section" id="services">
+          <div class="section-title-wrap">
+            <span class="section-subtitle">How It Works</span>
+            <h2 class="section-main-title">Transparent & Hassle-Free Repair</h2>
+          </div>
+          
+          <div class="features-grid">
+            <div class="glass-card feature-item-card">
+              <div class="feature-icon">1</div>
+              <h4>Home Pickup</h4>
+              <p>Schedule a slot. Our assigned mechanic arrives at your doorstep to inspect and collect the bike.</p>
+            </div>
+            <div class="glass-card feature-item-card">
+              <div class="feature-icon">2</div>
+              <h4>Checklist Servicing</h4>
+              <p>Track servicing tasks and check spare parts replacement approvals live from your device.</p>
+            </div>
+            <div class="glass-card feature-item-card">
+              <div class="feature-icon">3</div>
+              <h4>Home Handover</h4>
+              <p>We deliver your serviced and washed bike back to your address. Pay securely after inspecting.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing Packages -->
+        <div class="features-section" id="pricing" style="padding-top: 0;">
+          <div class="section-title-wrap">
+            <span class="section-subtitle">Service Pricing</span>
+            <h2 class="section-main-title">Packages Tailored for Your Ride</h2>
+          </div>
+
+          <div class="pricing-grid">
+            <div class="glass-card pricing-card">
+              <span class="price-pkg-title">Water Wash & Polish</span>
+              <div class="price-val-box">₹399</div>
+              <ul class="price-features-list">
+                <li>✔ High Pressure Foam Wash</li>
+                <li>✔ Chain Lubrication</li>
+                <li>✔ Body Wax & Polish</li>
+                <li>✔ Doorstep pickup & drop</li>
+              </ul>
+              <button class="btn btn-secondary pricing-book-btn" data-pkg="Water Wash & Polish">Book Pack</button>
+            </div>
+
+            <div class="glass-card pricing-card active">
+              <span class="price-pkg-badge font-sans">BEST SELLER</span>
+              <span class="price-pkg-title">General Service Pack</span>
+              <div class="price-val-box">₹999</div>
+              <ul class="price-features-list">
+                <li>✔ Complete Oil Replacement</li>
+                <li>✔ Brake Pad & Shoe Checks</li>
+                <li>✔ Spark Plug & Air Filter clean</li>
+                <li>✔ Chain Slack Adjustments</li>
+                <li>✔ Complimentary Foam Wash</li>
+              </ul>
+              <button class="btn pricing-book-btn" data-pkg="General Service">Book Pack</button>
+            </div>
+
+            <div class="glass-card pricing-card">
+              <span class="price-pkg-title">Major Mechanical Repair</span>
+              <div class="price-val-box">₹2499</div>
+              <ul class="price-features-list">
+                <li>✔ Detailed Engine Overhaul diagnostic</li>
+                <li>✔ Clutch Assembly adjustments</li>
+                <li>✔ Front & Rear Brake checks</li>
+                <li>✔ Carburator clean & tuning</li>
+                <li>✔ Full body detailing</li>
+              </ul>
+              <button class="btn btn-secondary pricing-book-btn" data-pkg="Major Repair">Book Pack</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials -->
+        <div class="features-section" style="padding-top: 0;">
+          <div class="section-title-wrap">
+            <span class="section-subtitle">Client Reviews</span>
+            <h2 class="section-main-title">What Bikers Say About MotoCare</h2>
+          </div>
+          <div class="features-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="glass-card quote-card" style="margin: 0;">
+              <p class="quote-text">"The real-time tracking is a lifesaver. I could see exactly when Vikram replaced my engine oil and brake pads, and the invoice was updated instantly. Super transparent!"</p>
+              <span class="quote-author">— Aarav Mehta, KTM Duke owner</span>
+            </div>
+            <div class="glass-card quote-card" style="margin: 0;">
+              <p class="quote-text">"Excellent doorstep bike service! They picked up my Bullet Classic 350 on time, did a full sprocket change, washed it like new, and dropped it back in 3 hours. Will use again."</p>
+              <span class="quote-author">— Vikram Malhotra, Royal Enfield owner</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- View 2: Authentication Login Page (Role & Email verification) -->
+      <section id="login-view" class="view-panel">
+        <div class="login-card-container">
+          <div class="glass-card login-card">
+            
+            <div class="login-header">
+              <h3>Sign In to MotoCare</h3>
+              <p>Access your portal to book or manage services</p>
+            </div>
+
+            <!-- Login tabs to select account roles -->
+            <div class="login-tabs">
+              <button class="login-tab-btn active" data-role="customer">Customer</button>
+              <button class="login-tab-btn" data-role="technician">Technician</button>
+              <button class="login-tab-btn" data-role="manager">Manager</button>
+            </div>
+
+            <form class="booking-form" id="app-login-form">
+              <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input type="email" id="login-email" class="input-field" required value="customer@motocare.com">
+              </div>
+              
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="input-field" required value="password">
+              </div>
+
+              <!-- Technician details widget (Only visible when technician tab is selected) -->
+              <div class="form-group" id="login-tech-dropdown-wrap" style="display: none;">
+                <label for="login-tech-profile">Mechanic Account profile</label>
+                <select id="login-tech-profile" class="select-input">
+                  <option value="Vikram Rathore">Vikram Rathore</option>
+                  <option value="Rohan Sharma">Rohan Sharma</option>
+                  <option value="Sandeep Singh">Sandeep Singh</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 10px;" id="login-submit-btn">
+                Log In
+              </button>
+            </form>
+
+            <!-- Quick login helper chips (Developer demo savior!) -->
+            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+              <span class="details-lbl" style="display:block; margin-bottom: 8px; text-align: center;">Demo Quick Accounts</span>
+              <div class="quick-login-row">
+                <button class="quick-chip" id="quick-login-customer" title="Log in instantly as a customer">Guest Customer</button>
+                <button class="quick-chip" id="quick-login-mechanic" title="Log in instantly as Vikram (Mechanic)">Vikram (Mechanic)</button>
+                <button class="quick-chip" id="quick-login-manager" title="Log in instantly as manager">Shop Manager</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- App View 3: Customer Portal (Renders customer dashboard) -->
+      <section id="customer-view" class="view-panel"></section>
+
+      <!-- App View 4: Technician Portal (Renders technician dashboard) -->
       <section id="technician-view" class="view-panel"></section>
 
-      <!-- Manager View container -->
+      <!-- App View 5: Manager Portal (Renders manager dashboard) -->
       <section id="manager-view" class="view-panel"></section>
 
     </main>
@@ -75,7 +274,7 @@
   <div class="modal-overlay" id="global-modal" style="display:none;">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 id="modal-title">Inventory Setup</h3>
+        <h3 id="modal-title">Config</h3>
         <button class="modal-close" id="modal-close-btn">&times;</button>
       </div>
       <div class="modal-body" id="modal-body-content">

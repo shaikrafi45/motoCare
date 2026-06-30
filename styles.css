@@ -128,6 +128,32 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* Guest Navigation Links */
+.guest-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.guest-nav-item {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: var(--transition-smooth);
+}
+
+.guest-nav-item:hover {
+  color: var(--text-main);
+  background: rgba(255,255,255,0.02);
+}
+
+.guest-nav-item.active {
+  color: var(--primary);
+  background: var(--primary-glow);
+}
+
 /* Hub info central banner */
 .hub-status-tag {
   font-size: 0.7rem;
@@ -290,7 +316,271 @@ body {
 }
 
 /* =========================================
-   1. CUSTOMER PORTAL VIEW STYLING
+   MARKETING LANDING & HERO STYLING
+   ========================================= */
+.hero-section {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 40px;
+  padding: 40px 0;
+  max-width: 1000px;
+  margin: 0 auto 48px auto;
+}
+
+.hero-badge {
+  font-size: 0.78rem;
+  background: var(--primary-glow);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  width: fit-content;
+  margin-bottom: 12px;
+  display: inline-block;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(249,115,22,0.15);
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  letter-spacing: -0.8px;
+}
+
+.hero-desc {
+  font-size: 0.98rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 12px;
+}
+
+.hero-graphic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-graphic-svg {
+  width: 240px;
+  height: 240px;
+}
+
+.features-section {
+  padding: 48px 0;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-title-wrap {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.section-subtitle {
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-main-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-item-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #000;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Pricing Grid */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.pricing-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-card.active {
+  border-color: var(--primary);
+  box-shadow: 0 8px 32px var(--primary-glow);
+  transform: scale(1.03);
+}
+
+.price-pkg-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--primary);
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-bottom-left-radius: var(--border-radius-sm);
+  letter-spacing: 0.5px;
+}
+
+.price-pkg-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.price-val-box {
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.price-features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.pricing-book-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* =========================================
+   AUTHENTICATION VIEW STYLING
+   ========================================= */
+.login-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  min-height: 80vh;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-header {
+  text-align: center;
+}
+
+.login-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.login-header p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.login-tabs {
+  display: flex;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  padding: 3px;
+}
+
+.login-tab-btn {
+  flex-grow: 1;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px;
+  border-radius: 20px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.login-tab-btn.active {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+.quick-login-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.quick-chip {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 4px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition-smooth);
+}
+
+.quick-chip:hover {
+  background: var(--primary-glow);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* =========================================
+   CUSTOMER PORTAL VIEW STYLING
    ========================================= */
 .customer-grid {
   display: grid;
@@ -471,7 +761,7 @@ body {
 }
 
 /* =========================================
-   2. TECHNICIAN PORTAL VIEW STYLING
+   TECHNICIAN PORTAL VIEW STYLING
    ========================================= */
 .tech-container {
   max-width: 800px;
@@ -614,7 +904,7 @@ body {
 }
 
 /* =========================================
-   3. MANAGER PORTAL VIEW STYLING
+   MANAGER PORTAL VIEW STYLING
    ========================================= */
 .manager-tabs-header {
   display: flex;
@@ -865,7 +1155,7 @@ body {
 }
 
 /* =========================================
-   4. MODALS & FORMS
+   MODALS & FORMS
    ========================================= */
 .modal-overlay {
   position: fixed;
@@ -931,7 +1221,7 @@ body {
 }
 
 /* =========================================
-   5. KEYFRAMES & ANIMATIONS
+   KEYFRAMES & ANIMATIONS
    ========================================= */
 @keyframes page-fade-in {
   from { opacity: 0; transform: translateY(8px); }
@@ -951,6 +1241,24 @@ body {
 
 /* Responsive breakdowns */
 @media (max-width: 900px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 24px 0;
+  }
+  .hero-badge, .hero-ctas {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-graphic {
+    display: none; /* Hide visual graphic on mobile hero */
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
   .customer-grid {
     grid-template-columns: 1fr;
   }
@@ -965,6 +1273,9 @@ body {
 @media (max-width: 768px) {
   .app-header {
     padding: 0 16px;
+  }
+  .guest-nav {
+    display: none; /* Hide landing links on small mobile screens */
   }
   .header-center-info {
     display: none;
