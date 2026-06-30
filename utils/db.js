@@ -78,7 +78,14 @@ class MotoCareMobileDB {
     try {
       const stored = localStorage.getItem(DB_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        // Self-healing merge to guarantee all schemas are active
+        return {
+          ...INITIAL_STATE,
+          ...parsed,
+          settings: { ...INITIAL_STATE.settings, ...(parsed.settings || {}) },
+          ownerBike: { ...INITIAL_STATE.ownerBike, ...(parsed.ownerBike || {}) }
+        };
       }
     } catch (e) {
       console.error('Failed to parse localStorage', e);
