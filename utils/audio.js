@@ -156,6 +156,38 @@ class MotoCareAudio {
       this.idleInterval = null;
     }
   }
+
+  playEngineRev() {
+    this.init();
+    if (!this.ctx || this.muted) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+
+    osc.type = 'sawtooth';
+    // Rev sweep: 50Hz -> 180Hz -> 60Hz
+    osc.frequency.setValueAtTime(50, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.15);
+    osc.frequency.exponentialRampToValueAtTime(60, now + 0.35);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(100, now);
+    filter.frequency.exponentialRampToValueAtTime(300, now + 0.15);
+    filter.Q.setValueAtTime(2, now);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.4);
+  }
 }
 
 const audio = new MotoCareAudio();
